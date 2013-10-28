@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS projects;
 DROP TABLE IF EXISTS fields;
 DROP TABLE IF EXISTS batches;
-DROP TABLE IF EXISTS records;
+DROP TABLE IF EXISTS record_values;
 
 CREATE TABLE users
 (
@@ -46,11 +46,11 @@ CREATE TABLE batches
 	status		integer		not null	default 0
 );
 
-CREATE TABLE records
+CREATE TABLE record_values
 (
 	id		integer		not null	primary key	autoincrement,
-	value		text,
+	record_value		text,
 	record_num	integer		not null,
-	batch_id	integer		not null,
-	field_id	integer		not null
+	field_num	integer		not null,
+	batch_id	integer		not null
 );

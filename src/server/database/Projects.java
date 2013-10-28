@@ -1,5 +1,11 @@
 package server.database;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import shared.model.*;
 
@@ -15,16 +21,100 @@ public class Projects {
 	 * @return a list of all projects in the table
 	 */
 	public List<Project> getProjects() {
-		return null;
+		List<Project> projects = new ArrayList<Project>();
+		PreparedStatement prepstatement = null;
+		ResultSet results = null;
+		
+		try {
+			//Get the list of all projects in the database
+			String getsql = "SELECT * FROM projects";
+			prepstatement = Database.getConnection().prepareStatement(getsql);
+			results = prepstatement.executeQuery();
+			
+			//Add each project to the list
+			while (results.next()) {
+				int id = results.getInt(1);
+				String title = results.getString(2);
+				int recordsperimage = results.getInt(3);
+				int firstycoord = results.getInt(4);
+				int recordheight = results.getInt(5);
+				
+				projects.add(new Project(id, title, recordsperimage, firstycoord, recordheight));
+			}
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return projects;
 	}
 	
 	/**
 	 * This method attempts to add a project
 	 * @param project the project to be added
-	 * @return true if the operation is successful, otherwise false
+	 * @return the id of the project added, or -1 if the insert failed
 	 */
-	public boolean add(Project project) {
-		return false;
+	public int add(Project project) {
+		Connection connection = Database.getConnection();
+		PreparedStatement prepstatement = null;
+		Statement statement = null;
+		ResultSet results = null;
+		int projectid = -1;
+		
+		try {
+			//Set up the SQL statement
+			String addsql = "INSERT INTO projects (title, recordsperimage, firstycoord, recordheight)"
+							+ "VALUES (?,?,?,?)";
+			
+			//Fill unknowns with the project's information
+			prepstatement = connection.prepareStatement(addsql);			
+			prepstatement.setString(1, project.getTitle());
+			prepstatement.setInt(2, project.getRecordsperimage());
+			prepstatement.setInt(3, project.getFirstycoord());
+			prepstatement.setInt(4, project.getRecordheight());
+						
+			//If the project was added correctly
+			if (prepstatement.executeUpdate() == 1) {
+				//Set the project's id to the next id in the table
+				statement = connection.createStatement();
+				results = statement.executeQuery("SELECT last_insert_rowid()");
+				results.next();
+				projectid = results.getInt(1);
+				project.setId(projectid);
+			}
+			else {
+				System.out.println("ERROR: Insert failed.");
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (statement != null)
+					statement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return projectid;
 	}
 	
 	/**

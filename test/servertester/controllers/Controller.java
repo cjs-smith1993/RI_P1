@@ -3,7 +3,7 @@ package test.servertester.controllers;
 import java.util.*;
 import client.ClientException;
 import client.communicator.ClientCommunicator;
-import shared.communication.ValidateUser_Params;
+import shared.communication.*;
 import test.servertester.views.*;
 
 public class Controller implements IController {
@@ -105,16 +105,36 @@ public class Controller implements IController {
 		ValidateUser_Params params = new ValidateUser_Params(values[0], values[1]);
 		getView().setRequest(params.toString());
 		
-		ClientCommunicator cc = ClientCommunicator.getInstance();
 		try {
+			ClientCommunicator cc = ClientCommunicator.getInstance(getView().getHost(), Integer.parseInt(getView().getPort()));
+			Object response = cc.ValidateUser(params);
+
 			getView().setResponse(cc.ValidateUser(params).toString());
 		}
 		catch (ClientException e) {
+			getView().setResponse("FAILED\n");
 			e.printStackTrace();
 		}
 	}
 	
 	private void getProjects() {
+		String[] values = getView().getParameterValues();
+		GetProjects_Params params = new GetProjects_Params(values[0], values[1]);
+		getView().setRequest(params.toString());
+		
+		try {
+			ClientCommunicator cc = ClientCommunicator.getInstance(getView().getHost(), Integer.parseInt(getView().getPort()));
+			Object response = cc.GetProjects(params);
+
+			if (response != null)
+				getView().setResponse(cc.GetProjects(params).toString());
+			else
+				getView().setResponse("FAILED\n");
+		}
+		catch (Exception e) {
+			getView().setResponse("FAILED\n");
+			e.printStackTrace();
+		}
 	}
 	
 	private void getSampleImage() {

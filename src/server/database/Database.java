@@ -1,9 +1,12 @@
 package server.database;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Scanner;
 import shared.communication.*;
 
 public class Database {
@@ -48,6 +51,7 @@ public class Database {
 	 * The full url to the database
 	 */
 	private static String CONNECTION_URL = "jdbc:sqlite:" + DATABASE_NAME;
+	private static String RESET_FILE = "database" + File.separator + "indexer_server.sql";
 	
 //Constructors
 	/**
@@ -123,7 +127,53 @@ public class Database {
 
 //Setters
 
-//Methods	
+//Methods
+	/**
+	 * This method removes all data from the database and recreates the tables
+	 */
+	public void reset() {
+		Connection connection = Database.getConnection(); //Get a connection to the SQL database
+		String[] statements = null;
+		Statement statement = null;
+
+		//Get all statements from the reset file
+		try {
+			StringBuilder sb = new StringBuilder();
+			Scanner s = new Scanner(new File(RESET_FILE));
+			while (s.hasNextLine()) {
+				sb.append(s.nextLine() + "\n");
+			}
+			s.close();
+			//Send each statement to an individual string (remember the semicolon is now gone)
+			statements = sb.toString().split(";");
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		//Execute each statement
+		for (int i = 0; i < statements.length; i++) {
+			try {
+				statement = connection.createStatement();
+				//Remember to add the semicolon back to each statement
+				//System.out.println(statements[i] + ";");
+				statement.executeUpdate(statements[i] + ";");
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+			finally {
+				try {
+					if (statement != null)
+						statement.close();
+				}
+				catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	/**
 	 * This method opens a connection to the SQL database
 	 */
@@ -180,7 +230,7 @@ public class Database {
 	 * @return a list of information for each project
 	 */
 	public GetProjects_Result GetProjects(GetProjects_Params params) {
-		return null;
+		return new GetProjects_Result(projects.getProjects());
 	}
 	
 	/**

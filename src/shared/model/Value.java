@@ -16,13 +16,13 @@ public class Value {
 	/**
 	 * the value for this value
 	 */
-	private String value;
+	private String record_value;
 	/**
 	 * the row this value in the batch it belongs to (cannot be null)
 	 */
 	private int record_num;
 	/**
-	 * the column of this value in the batch it belonds to
+	 * the column of this value in the batch it belongs to
 	 */
 	private int field_num;
 	/**
@@ -32,10 +32,10 @@ public class Value {
 
 	
 //Constructors
-	public Value(int id, String value, int record_num, int batch_id,
+	public Value(int id, String record_value, int record_num, int batch_id,
 			int field_num) {
 		this.id = id;
-		this.value = value;
+		this.record_value = record_value;
 		this.record_num = record_num;
 		this.batch_id = batch_id;
 		this.field_num = field_num;
@@ -49,7 +49,7 @@ public class Value {
 	 */
 	public Value(Element element, int record_num, int field_num, int batch_id) {
 		this.id = -1;
-		this.value = element.getTextContent();
+		this.record_value = element.getTextContent();
 		this.record_num = record_num;
 		this.field_num = field_num;
 		this.batch_id = batch_id;
@@ -65,11 +65,11 @@ public class Value {
 	}
 
 	/**
-	 * This method returns the value for the value
-	 * @return the value for this value
+	 * This method returns the record_value for the value
+	 * @return the record_value for this value
 	 */
-	public String getValue() {
-		return value;
+	public String getRecord_value() {
+		return record_value;
 	}
 
 	/**
@@ -106,11 +106,11 @@ public class Value {
 	}
 
 	/**
-	 * This method sets the value for this value
-	 * @param value the value to set for this value
+	 * This method sets the record_value for this value
+	 * @param record_value the record_value to set for this value
 	 */
-	public void setValue(String value) {
-		this.value = value;
+	public void setRecord_value(String record_value) {
+		this.record_value = record_value;
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class Value {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("id: " + id + "\n");
-		sb.append("value: " + value + "\n");
+		sb.append("value: " + record_value + "\n");
 		sb.append("record_num: " + record_num + "\n");
 		sb.append("field_num: " + field_num + "\n");
 		sb.append("batch_id: " + batch_id + "\n");

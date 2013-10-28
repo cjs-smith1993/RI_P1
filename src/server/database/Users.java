@@ -12,39 +12,37 @@ import shared.model.*;
  *
  */
 public class Users {
-//Fields
 	
-//Constructors
-	
-//Getters
-	
-//Setters
-
-//Methods
 	/**
 	 * This method returns a list of all users in the table
 	 * @return a list of all users in the table
 	 */
 	public List<User> getUsers() {
 		List<User> users = new ArrayList<User>();
+		Connection connection = Database.getConnection();
 		PreparedStatement prepstatement = null;
 		ResultSet results = null;
 		
 		try {
+			//Get the entire list of users in the database
 			String getsql = "SELECT * FROM users";
-			prepstatement = Database.getConnection().prepareStatement(getsql);
-			
+			prepstatement = connection.prepareStatement(getsql);
 			results = prepstatement.executeQuery();
-			int id = results.getInt(1);
-			String username = results.getString(2);
-			String password = results.getString(3);
-			String lastname = results.getString(4);
-			String firstname = results.getString(5);
-			String email = results.getString(6);
-			int indexedrecords = results.getInt(7);
-			int batch_id = results.getInt(8);
-			User user = new User(id, username, password, lastname, firstname, email, indexedrecords, batch_id);
-			users.add(user);
+			
+			//Add each user to the list
+			while (results.next()) {
+				int id = results.getInt(1);
+				String username = results.getString(2);
+				String password = results.getString(3);
+				String lastname = results.getString(4);
+				String firstname = results.getString(5);
+				String email = results.getString(6);
+				int indexedrecords = results.getInt(7);
+				int batch_id = results.getInt(8);
+				
+				users.add(new User(id, username, password, lastname, firstname, email, indexedrecords, batch_id));
+			}
+
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
@@ -70,7 +68,7 @@ public class Users {
 	 * @return the userid of the user that was inserted, or -1 if the insert failed
 	 */
 	public int add(User user) {		
-		Connection connection = Database.getConnection(); //Get a connection to the SQL database
+		Connection connection = Database.getConnection();
 		PreparedStatement prepstatement = null;
 		Statement statement = null;
 		ResultSet results = null;
@@ -81,6 +79,7 @@ public class Users {
 			String addsql = "INSERT INTO users (username, password, lastname, firstname, email, indexedrecords, batch_id)"
 							+ "VALUES (?,?,?,?,?,?,?)";
 			
+			//Fill unknowns with the user's information
 			prepstatement = connection.prepareStatement(addsql);			
 			prepstatement.setString(1, user.getUsername());
 			prepstatement.setString(2, user.getPassword());
@@ -90,7 +89,9 @@ public class Users {
 			prepstatement.setInt(6, user.getIndexedRecords());
 			prepstatement.setInt(7, user.getBatch_id());
 						
-			if (prepstatement.executeUpdate() == 1) { //If a user was added correctly
+			//If the user was added correctly
+			if (prepstatement.executeUpdate() == 1) {
+				//Set the user's id to the next id in the table
 				statement = connection.createStatement();
 				results = statement.executeQuery("SELECT last_insert_rowid()");
 				results.next();
@@ -144,18 +145,15 @@ public class Users {
 	 * @return an encapsulation of the server's response
 	 */
 	public ValidateUser_Result ValidateUser(ValidateUser_Params params) {		
-		User u = new User(0, "sheila", "parker", "Sheila", "Parker", "sheila.parker@gmail.com", 0, -1);
-		add(u);
-		
 		//Loop through the list of users in the database
 		List<User> users = getUsers();
+		
 		for (User user : users) {
-			System.out.println(user.getUsername());
 			//If a match is found, return the user's information
 			if (params.getUsername().equals(user.getUsername()) && params.getPassword().equals(user.getPassword())) {
 				return new ValidateUser_Result(user.getFirstname(), user.getLastname(), user.getIndexedRecords(), "TRUE");
 			}
 		}
-		return null;
+		return new ValidateUser_Result("", "", 0, "FALSE");
 	}
 }

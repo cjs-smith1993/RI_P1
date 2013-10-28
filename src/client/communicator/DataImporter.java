@@ -45,7 +45,11 @@ public class DataImporter {
 	 * @param filename the path to the XML file
 	 */
 	public void importFile(String filename) {
-
+		//First delete the old database
+		database.startTransaction();
+		database.reset();
+		database.endTransaction(true);
+		
 		//Copy files to local directory
 		File xmlFile = new File(filename);
 
@@ -77,7 +81,7 @@ public class DataImporter {
 		for (int i = 0; i < users.getLength(); i++) {
 			//Create a user from the current element
 			User user = new User((Element)users.item(i));
-			System.out.println(user.toString());
+			//System.out.println(user.toString());
 			
 			//Add the user to the database
 			Database.getInstance().startTransaction();
@@ -95,9 +99,12 @@ public class DataImporter {
 			//Create a project from the current element
 			Element curProject = (Element)projects.item(i);
 			Project project = new Project(curProject);
-			System.out.println(project.toString());
+			//System.out.println(project.toString());
 			
-			//Database.getInstance().getAllProjects().add(project); //Add the project to the database
+			//Add the project to the database
+			Database.getInstance().startTransaction();
+			Database.getInstance().getAllProjects().add(project); //Add the project to the database
+			Database.getInstance().endTransaction(true);
 			
 			//Parse the list of fields for the project
 			Element fields = (Element)curProject.getElementsByTagName("fields").item(0);
@@ -118,10 +125,12 @@ public class DataImporter {
 		for (int i = 0; i < fields.getLength(); i++) {
 			//Create a field from the current element
 			Field field = new Field((Element)fields.item(i), i, project_id);
-			System.out.println(field);
+			//System.out.println(field);
 			
 			//Add the field to the database
-			//Database.getInstance().getAllFields().add(field);
+			Database.getInstance().startTransaction();
+			Database.getInstance().getAllFields().add(field);
+			Database.getInstance().endTransaction(true);
 		}
 	}
 	
@@ -134,10 +143,12 @@ public class DataImporter {
 			//Create a batch from the current element
 			Element curBatch = (Element)batches.item(i);
 			Batch batch = new Batch(curBatch, project_id);
-			System.out.println(batch.toString());
+			//System.out.println(batch.toString());
 			
 			//Add the batch to the database
-			//Database.getInstance().getAllBatches().add(batch);
+			Database.getInstance().startTransaction();
+			Database.getInstance().getAllBatches().add(batch);
+			Database.getInstance().endTransaction(true);
 			
 			//Parse the list of records in the batch
 			Element records = (Element)curBatch.getElementsByTagName("records").item(0);
@@ -161,10 +172,12 @@ public class DataImporter {
 				//Create a value for each value
 				Element curValue = (Element)values.item(j);
 				Value value = new Value(curValue, i, j, batch_id);
-				System.out.println(value.toString());
+				//System.out.println(value.toString());
 				
 				//Add the value to the database
-				//Database.getInstance().getRecords().add(value);
+				Database.getInstance().startTransaction();
+				Database.getInstance().getRecords().add(value);
+				Database.getInstance().endTransaction(true);
 			}
 		}
 	}
@@ -176,6 +189,6 @@ public class DataImporter {
 	 */
 	public static void main(String args[]) {
 		DataImporter di = getInstance();
-		di.importFile("demo/indexer_data/Records/Records.xml");
+		di.importFile(args[0]);
 	}
 }

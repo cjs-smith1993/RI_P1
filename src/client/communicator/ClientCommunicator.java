@@ -21,15 +21,11 @@ public class ClientCommunicator {
 	/**
 	 * The location of the server. In our application, the client and server run on the same machine
 	 */
-	private static final String SERVER_HOST = "localhost";
+	private static String SERVER_HOST;
 	/**
 	 * The port number the server is listening to
 	 */
-	private static final int SERVER_PORT = 8080;
-	/**
-	 * A prefix for any URL on the server
-	 */
-	private static final String URL_PREFIX = "http://" + SERVER_HOST + ":" + SERVER_PORT + "/";
+	private static int SERVER_PORT;
 	/**
 	 * The command for a get request
 	 */
@@ -64,7 +60,10 @@ public class ClientCommunicator {
 	 * This method returns the current instance of the client communicator or creates one if one doesn't exist
 	 * @return The current instance of the client communicator
 	 */
-	public static ClientCommunicator getInstance() {
+	public static ClientCommunicator getInstance(String host, int port) {
+		ClientCommunicator.SERVER_HOST = host;
+		ClientCommunicator.SERVER_PORT = port;
+				
 		if (instance == null)
 			instance = new ClientCommunicator();
 		return instance;
@@ -88,7 +87,7 @@ public class ClientCommunicator {
 	 * @return the urlPrefix
 	 */
 	public static String getUrlPrefix() {
-		return URL_PREFIX;
+		return "http://" + getServerHost() + ":" + getServerPort();
 	}
 
 	/**
@@ -151,16 +150,18 @@ public class ClientCommunicator {
 	private Object doPost(String commandName, Object postData) throws ClientException {
 		try {
 			//Create a connection to the server
-			URL url = new URL(URL_PREFIX + commandName);
+			URL url = new URL(getUrlPrefix() + commandName);
+			//System.out.println(url);
+
 			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestMethod(HTTP_POST);
 			connection.setDoOutput(true);
 			connection.connect();
-			
+						
 			//Send the data to the server
 			xmlStream.toXML(postData, connection.getOutputStream());
 			connection.getOutputStream().close();
-			
+						
 			//If the connection is successful
 			if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				//Get the results from the server
@@ -268,8 +269,8 @@ public class ClientCommunicator {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		ClientCommunicator cc = ClientCommunicator.getInstance();
-		
+		//ClientCommunicator cc = ClientCommunicator.getInstance("localhost", 8080);
+		/*
 		try {
 			ValidateUser_Params params = new ValidateUser_Params("sheila", "parker");
 			ValidateUser_Result result = (ValidateUser_Result)cc.doPost("ValidateUser", params);
@@ -278,5 +279,6 @@ public class ClientCommunicator {
 		catch (ClientException e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 }

@@ -17,10 +17,6 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class Server {
 //Fields
 	/**
-	 * The port number of the server
-	 */
-	private static final int SERVER_PORT_NUMBER = 8080;
-	/**
 	 * The maximum number of waiting connections allowed
 	 */
 	private static final int MAX_WAITING_CONNECTIONS = 10;
@@ -48,11 +44,11 @@ public class Server {
 	 * This method returns the current instance of the server, or creates and initializes it if one doesn't exist
 	 * @return The current instance of the server
 	 */
-	public static HttpServer getInstance() {
+	public static HttpServer getInstance(int portNum) {
 		if (server == null) {
 			try {
 				//Create the server if it doesn't exist
-				server = HttpServer.create(new InetSocketAddress(SERVER_PORT_NUMBER), MAX_WAITING_CONNECTIONS);
+				server = HttpServer.create(new InetSocketAddress(portNum), MAX_WAITING_CONNECTIONS);
 				server.setExecutor(null);
 			}
 			catch (IOException e) {
@@ -93,8 +89,8 @@ public class Server {
 	/**
 	 * This method runs the server
 	 */
-	private static void run() {
-		server = Server.getInstance();
+	private static void run(int portNum) {
+		server = Server.getInstance(portNum);
 		Server.initialize();
 		server.start();
 	}
@@ -107,31 +103,52 @@ public class Server {
 	private static void handleCommand(HttpExchange exchange, String command) {		
 		//Get the input parameters from the client
 		Object requestBody = xmlStream.fromXML(exchange.getRequestBody());
-		
+				
 		//For the appropriate command, perform the command and send the result back to the client
 		try {
+			//Start the transaction
 			Database.getInstance().startTransaction();
-			switch (command) {
-				case "ValidateUser":
-					ValidateUser_Params params = (ValidateUser_Params)requestBody;					
-					exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-					ValidateUser_Result results = Database.getInstance().ValidateUser(params);
-					xmlStream.toXML(results, exchange.getResponseBody());
-					exchange.close();
-					break;
-				case "GetProjects":
-					break;
-				case "GetSampleImage":
-					break;
-				case "DownloadBatch":
-					break;
-				case "SubmitBatch":
-					break;
-				case "GetFields":
-					break;
-				case "Search":
-					break;
+			Object results = null;
+			
+			if (command.equals("ValidateUser")) {
+				ValidateUser_Params params = (ValidateUser_Params)requestBody;					
+				exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+				//Validate the user
+				results = Database.getInstance().ValidateUser(params);
 			}
+			else if (command.equals("GetProjects")) {
+				GetProjects_Params params = (GetProjects_Params)requestBody;
+				ValidateUser_Params validate_params = new ValidateUser_Params(params.getUsername(), params.getPassword());
+				exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+				//First validate the user
+				results = Database.getInstance().ValidateUser(validate_params);
+				//Now get the projects
+				if (((ValidateUser_Result) results).getValidity().equals("TRUE")) {
+					params = (GetProjects_Params)requestBody;
+					results = Database.getInstance().GetProjects((GetProjects_Params)params);
+				}
+				else
+					results = null;
+			}
+			else if (command.equals("GetSampleImage")) {
+				
+			}
+			else if (command.equals("DownloadBatch")) {
+
+			}
+			else if (command.equals("SubmitBatch")) {
+
+			}
+			else if (command.equals("GetFields")) {
+
+			}
+			else if (command.equals("Search")) {
+
+			}
+
+			//Send the results back to the client and end the transaction
+			xmlStream.toXML(results, exchange.getResponseBody());
+			exchange.close();
 			Database.getInstance().endTransaction(true);
 		}
 		catch (IOException e) {
@@ -221,6 +238,6 @@ public class Server {
 	 * @param args
 	 */
 	public static void main (String args[]) {
-		Server.run();
+		Server.run(Integer.parseInt(args[0]));
 	}
 }
