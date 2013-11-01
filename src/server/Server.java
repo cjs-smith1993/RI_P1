@@ -1,8 +1,12 @@
 package server;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import server.database.Database;
 import shared.communication.*;
 import com.sun.net.httpserver.*;
@@ -84,6 +88,7 @@ public class Server {
 		server.createContext("/SubmitBatch", submitBatchHandler);
 		server.createContext("/GetFields", getFieldsHandler);
 		server.createContext("/Search", searchHandler);
+		server.createContext("/", downloadHandler);
 	}
 	
 	/**
@@ -111,39 +116,74 @@ public class Server {
 			Object results = null;
 			
 			if (command.equals("ValidateUser")) {
-				ValidateUser_Params params = (ValidateUser_Params)requestBody;					
-				exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 				//Validate the user
-				results = Database.getInstance().ValidateUser(params);
+				results = validate(exchange, (ValidateUser_Params)requestBody);
 			}
 			else if (command.equals("GetProjects")) {
 				GetProjects_Params params = (GetProjects_Params)requestBody;
-				ValidateUser_Params validate_params = new ValidateUser_Params(params.getUsername(), params.getPassword());
-				exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 				//First validate the user
-				results = Database.getInstance().ValidateUser(validate_params);
-				//Now get the projects
-				if (((ValidateUser_Result) results).getValidity().equals("TRUE")) {
-					params = (GetProjects_Params)requestBody;
-					results = Database.getInstance().GetProjects((GetProjects_Params)params);
+				results = validate(exchange, new ValidateUser_Params(params.getUsername(), params.getPassword()));
+				if (((ValidateUser_Result) results).isValid()) {
+					//Now get the projects
+					results = Database.getInstance().GetProjects(params);
 				}
 				else
-					results = null;
+					results = new GetProjects_Result(null);
 			}
 			else if (command.equals("GetSampleImage")) {
-				
+				GetSampleImage_Params params = (GetSampleImage_Params)requestBody;
+				//First validate the user
+				results = validate(exchange, new ValidateUser_Params(params.getUsername(), params.getPassword()));
+				if (((ValidateUser_Result) results).isValid()) {
+					//Now get the sample image
+					results = Database.getInstance().GetSampleImage(params);
+				}
+				else
+					results = new GetSampleImage_Result(null);
 			}
 			else if (command.equals("DownloadBatch")) {
-
+				DownloadBatch_Params params = (DownloadBatch_Params)requestBody;
+				//First validate the user
+				results = validate(exchange, new ValidateUser_Params(params.getUsername(), params.getPassword()));
+				if (((ValidateUser_Result) results).isValid()) {
+					//Now download the batch
+					results = Database.getInstance().DownloadBatch(params);
+				}
+				else
+					results = new DownloadBatch_Result(-1, -1, "", -1, -1, -1, -1, null);
 			}
 			else if (command.equals("SubmitBatch")) {
-
+				SubmitBatch_Params params = (SubmitBatch_Params)requestBody;
+				//First validate the user
+				results = validate(exchange, new ValidateUser_Params(params.getUsername(), params.getPassword()));
+				if (((ValidateUser_Result)results).isValid()) {
+					//Now submit the batch
+					results = Database.getInstance().SubmitBatch(params);
+				}
+				else
+					results = new SubmitBatch_Result(false);
 			}
 			else if (command.equals("GetFields")) {
-
+				GetFields_Params params = (GetFields_Params)requestBody;
+				//First validate the user
+				results = validate(exchange, new ValidateUser_Params(params.getUsername(), params.getPassword()));
+				if (((ValidateUser_Result)results).isValid()) {
+					//Now get the fields
+					results = Database.getInstance().GetFields(params);
+				}
+				else
+					results = new GetFields_Result(null);
 			}
 			else if (command.equals("Search")) {
-
+				Search_Params params = (Search_Params)requestBody;
+				//First validate the user
+				results = validate(exchange, new ValidateUser_Params(params.getUsername(), params.getPassword()));
+				if (((ValidateUser_Result)results).isValid()) {
+					//Now search
+					results = Database.getInstance().Search(params);
+				}
+				else
+					results = new Search_Result(null);
 			}
 
 			//Send the results back to the client and end the transaction
@@ -154,6 +194,18 @@ public class Server {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * This method returns a ValidateUser_Result containing the result of the validation request
+	 * @param exchange An HttpExchange object
+	 * @param params An encapsulation of a user's username and password
+	 * @return An encapsulation of the user with the matching username and password, or an empty ValidateUser_Result if the validation fails
+	 * @throws IOException
+	 */
+	private static ValidateUser_Result validate(HttpExchange exchange, ValidateUser_Params params) throws IOException {
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+		return Database.getInstance().ValidateUser(params);
 	}
 	
 	/**
@@ -230,6 +282,24 @@ public class Server {
 		@Override
 		public void handle(HttpExchange exchange) throws IOException {
 			handleCommand(exchange, "Search");
+		}
+	};
+	
+	/**
+	 * This anonymous inner class handles a file download request
+	 */
+	private static HttpHandler downloadHandler = new HttpHandler() {
+		
+		@Override
+		public void handle(HttpExchange exchange) throws IOException {
+			String file_path = exchange.getRequestURI().toString();
+			Path path = Paths.get(file_path);
+			byte[] bytes = Files.readAllBytes(path);
+						
+			exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, bytes.length);
+			OutputStream os = exchange.getResponseBody();
+			os.write(bytes);
+			os.close();
 		}
 	};
 	

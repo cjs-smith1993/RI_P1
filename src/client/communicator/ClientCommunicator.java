@@ -8,7 +8,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import server.database.Database;
 import shared.communication.*;
+import shared.model.Batch;
 import client.ClientException;
 
 /**
@@ -37,7 +39,7 @@ public class ClientCommunicator {
 	/**
 	 * The location of the local directory where files will be stored
 	 */
-	private static final String LOCAL_DIRECTORY = "/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/local_files";
+	private static final String LOCAL_DIRECTORY = "/Users/CJS/Documents/School/Fall2013/CS_240/workspace/RecordIndexer/local_files";
 	/**
 	 * An XML stream to allow for easier serialization/deserialization
 	 */
@@ -120,12 +122,12 @@ public class ClientCommunicator {
 	 * @throws ClientException
 	 * @throws IOException
 	 */
-	private void doGet(URL url) throws ClientException, IOException {
+	public void doGet(URL url) throws ClientException, IOException {		
 		//Create a connection to the server
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestMethod(HTTP_GET);
 		connection.connect();
-		
+				
 		//If the connection is successful
 		if (connection.getResponseCode() == HttpURLConnection.HTTP_OK){
 			InputStream responseBody = connection.getInputStream();
@@ -147,7 +149,7 @@ public class ClientCommunicator {
 	 * @return An encapsulation of the results for the command
 	 * @throws ClientException
 	 */
-	private Object doPost(String commandName, Object postData) throws ClientException {
+	public Object doPost(String commandName, Object postData) throws ClientException {
 		try {
 			//Create a connection to the server
 			URL url = new URL(getUrlPrefix() + commandName);
@@ -165,7 +167,8 @@ public class ClientCommunicator {
 			//If the connection is successful
 			if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				//Get the results from the server
-				return xmlStream.fromXML(connection.getInputStream());
+				Object result = xmlStream.fromXML(connection.getInputStream());
+				return result;
 			}
 			else {
 				throw new ClientException(String.format("doPost failed %s (http code %d)", commandName, connection.getResponseCode()));
@@ -269,16 +272,35 @@ public class ClientCommunicator {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		//ClientCommunicator cc = ClientCommunicator.getInstance("localhost", 8080);
-		/*
+//		ClientCommunicator cc = ClientCommunicator.getInstance("localhost", 8080);
+//		try {
+//			//GetSampleImage_Params params = new GetSampleImage_Params("sheila", "parker", 1);
+//			//GetSampleImage_Result result = (GetSampleImage_Result)cc.doPost("/GetSampleImage", params);
+//			//System.out.println(result.toString());
+//			cc.doGet(new URL("http://localhost:8080/Users/CJS/Documents/School/Fall2013/CS_240/workspace/RecordIndexer/images/1890_image0.png"));
+//			//cc.doGet(new URL("http://students.cs.byu.edu/~cjs1993/pics/lds.png"));
+//		}
+//		catch (ClientException | IOException e) {
+//			e.printStackTrace();
+//		}
+		ClientCommunicator cc = ClientCommunicator.getInstance("localhost", 8080);
+		DownloadBatch_Params params = new DownloadBatch_Params("sheila", "parker", 1);
 		try {
-			ValidateUser_Params params = new ValidateUser_Params("sheila", "parker");
-			ValidateUser_Result result = (ValidateUser_Result)cc.doPost("ValidateUser", params);
-			System.out.println(result.toString());
+			DataImporter.getInstance().importFile("demo/indexer_data/Records/Records.xml");
+			cc.DownloadBatch(params);
+			Database.getInstance().startTransaction();
+			Batch b = Database.getInstance().batches().getBatch(1);
+			Database.getInstance().endTransaction(true);
+			assert b.getUser_id() == 3;
+			assert b.getState() == 0;
+			//params = new DownloadBatch_Params("sheila", "parker2", 1);
+			//assert cc.DownloadBatch(params).toString().equals("FAILED\n");
+			//params = new DownloadBatch_Params("sheila", "parker", 2);
+			//assert cc.DownloadBatch(params).toString().equals("FAILED\n");
 		}
 		catch (ClientException e) {
 			e.printStackTrace();
+			assert false;
 		}
-		*/
 	}
 }

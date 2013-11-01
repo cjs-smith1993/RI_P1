@@ -46,19 +46,38 @@ public class Values {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		finally {
-			try {
-				if (prepstatement != null)
-					prepstatement.close();
-				if (results != null)
-					results.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		return values;
+	}
+	
+	/**
+	 * This method gets the value matching the value_id
+	 * @param value_id the id of the value to get
+	 * @return the matching value, or null if one doesn't exist
+	 */
+	public Value getValue(int value_id) {
+		Value value = null;
+		PreparedStatement prepstatement = null;
+		ResultSet results = null;
+
+		try {
+			String getsql = "SELECT * FROM values WHERE id = ?";
+			prepstatement = Database.getConnection().prepareStatement(getsql);
+			prepstatement.setInt(1, value_id);
+			results = prepstatement.executeQuery();
+			//If there isn't a matching value, quit
+			if (!results.isBeforeFirst())
+				return null;
+
+			String record_value = results.getString(2);
+			int record_num = results.getInt(3);
+			int field_num = results.getInt(4);
+			int batch_id = results.getInt(5);
+			value = new Value(value_id, record_value, record_num, field_num, batch_id);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return value;
 	}
 	
 	/**
@@ -100,19 +119,6 @@ public class Values {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
-		}
-		finally {
-			try {
-				if (prepstatement != null)
-					prepstatement.close();
-				if (statement != null)
-					statement.close();
-				if (results != null)
-					results.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return valueid;
 	}

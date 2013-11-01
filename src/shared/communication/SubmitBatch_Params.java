@@ -1,5 +1,8 @@
 package shared.communication;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class is an encapsulation of the parameters of the SubmitBatch command, which allows for easier XML serialization/deserialization.
  * @author Connor Smith
@@ -22,7 +25,7 @@ public class SubmitBatch_Params {
 	/**
 	 * the field values of the batch
 	 */
-	private String field_values;
+	private ArrayList<ArrayList<String>> field_values;
 	
 //Constructors
 	/**
@@ -30,15 +33,15 @@ public class SubmitBatch_Params {
 	 * @param username
 	 * @param password
 	 * @param batch_id
-	 * @param field_values
+	 * @param values
 	 */
 	public SubmitBatch_Params(String username, String password, int batch_id,
-			String field_values) {
+			ArrayList<ArrayList<String>> values) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.batch_id = batch_id;
-		this.field_values = field_values;
+		this.field_values = values;
 	}
 
 //Getters
@@ -70,7 +73,7 @@ public class SubmitBatch_Params {
 	 * This method returns the field values of the batch
 	 * @return the field_values
 	 */
-	public String getField_values() {
+	public ArrayList<ArrayList<String>> getField_values() {
 		return field_values;
 	}
 
@@ -103,7 +106,27 @@ public class SubmitBatch_Params {
 	 * This method sets the field values of the batch
 	 * @param field_values the field_values to set
 	 */
-	public void setField_values(String field_values) {
+	public void setField_values(ArrayList<ArrayList<String>> field_values) {
 		this.field_values = field_values;
+	}
+	
+//Methods
+	/**
+	 * This method returns a String representation of the SubmitBatch parameters
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.username + "\n" + this.password + "\n" + this.batch_id + "\n");
+		for (int i = 0; i < this.field_values.size(); i++) {
+			for (int j = 0; j < this.field_values.get(i).size(); j++) {
+				sb.append(this.field_values.get(i).get(j));
+				if (j < this.field_values.get(i).size()-1)
+					sb.append(",");
+			}
+			if (i < this.field_values.size()-1)
+				sb.append(";");
+		}
+		return sb.toString();
 	}
 }

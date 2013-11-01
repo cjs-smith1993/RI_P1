@@ -1,7 +1,5 @@
 package shared.model;
 
-import java.io.File;
-import java.io.IOException;
 import org.w3c.dom.Element;
 
 /**
@@ -17,9 +15,9 @@ public class Batch {
 	 */
 	private int id;
 	/**
-	 * the PNG file that contains the image for this batch (cannot be null, unique)
+	 * the path to the PNG file that contains the image for this batch (cannot be null, unique)
 	 */
-	private File file;
+	private String file_name;
 	/**
 	 * the id number of the project this batch belongs to (cannot be null)
 	 */
@@ -42,9 +40,9 @@ public class Batch {
 	 * @param user_id the id number of the user currently working on this batch
 	 * @param state the current state of this batch
 	 */
-	public Batch(int id, File file, int project_id, int user_id, int state) {
+	public Batch(int id, String file_name, int project_id, int user_id, int state) {
 		this.id = id;
-		this.file = file;
+		this.file_name = file_name;
 		this.project_id = project_id;
 		this.user_id = user_id;
 		this.state = state;
@@ -56,9 +54,9 @@ public class Batch {
 	 * @param project_id The id of the project this field is associated with
 	 */
 	public Batch(Element element, int project_id) {
-		String filename = element.getElementsByTagName("file").item(0).getTextContent();
+		String file_name = element.getElementsByTagName("file").item(0).getTextContent();
 		this.id = -1;
-		this.file = new File(filename);
+		this.file_name = file_name;
 		this.project_id = project_id;
 		this.user_id = -1;
 		this.state = -1;
@@ -74,11 +72,11 @@ public class Batch {
 	}
 
 	/**
-	 * This method returns the PNG file that contains the image for this batch
-	 * @return the file for this batch
+	 * This method returns the path to the PNG file that contains the image for this batch
+	 * @return the file_name for this batch
 	 */
-	public File getFile() {
-		return file;
+	public String getFile() {
+		return file_name;
 	}
 
 	/**
@@ -115,11 +113,11 @@ public class Batch {
 	}
 
 	/**
-	 * This method sets the PNG file that contains the image for this batch
-	 * @param filename the location of the file to set for this batch
+	 * This method sets the path to the PNG file that contains the image for this batch
+	 * @param file_name the location of the file to set for this batch
 	 */
-	public void setFile(String filename) {
-		this.file = new File(filename);
+	public void setFile(String file_name) {
+		this.file_name = file_name;
 	}
 
 	/**
@@ -155,12 +153,7 @@ public class Batch {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("id: " + id + "\n");
-		try {
-			sb.append("file: " + file.getCanonicalPath() + "\n");
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		sb.append("file: " + file_name + "\n");
 		sb.append("project_id: " + project_id + "\n");
 		sb.append("user_id: " + user_id + "\n");
 		sb.append("state: " + state + "\n");

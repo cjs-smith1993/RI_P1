@@ -63,8 +63,11 @@ public class GetProjects_Params {
 	}
 
 //Methods
+	/**
+	 * This method returns a String representation of the Get Projects parameters
+	 */
 	@Override
 	public String toString() {
-		return "Username: " + this.username + ", Password: " + this.password;
+		return this.username + "\n" + this.password + "\n";
 	}
 }

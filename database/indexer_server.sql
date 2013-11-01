@@ -40,7 +40,7 @@ CREATE TABLE fields
 CREATE TABLE batches
 (
 	id		integer		not null	primary key	autoincrement,
-	file		text		not null	unique,
+	file_name		text		not null	unique,
 	project_id	integer		not null,
 	user_id		integer		not null,
 	status		integer		not null	default 0

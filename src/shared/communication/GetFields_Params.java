@@ -83,4 +83,13 @@ public class GetFields_Params {
 	public void setProject_id(int project_id) {
 		this.project_id = project_id;
 	}
+
+//Methods
+	/**
+	 * This method returns a String representation of the GetFields parameters
+	 */
+	@Override
+	public String toString() {
+		return this.username + "\n" + this.password + "\n" + this.project_id + "\n";
+	}
 }

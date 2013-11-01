@@ -1,6 +1,5 @@
 package server.database;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,19 +18,33 @@ import shared.model.*;
 public class Fields {
 
 	/**
-	 * This method returns a list of all fields in the table
-	 * @return a list of all fields in the table
+	 * This method returns information about all of the fields for a specified project or all projects
+	 * @param project_id the id of the project the requested fields belong to, or -1 if all fields are requested
+	 * @return the list of matching fields
 	 */
-	public List<Field> getFields() {
-		List<Field> fields = new ArrayList<Field>();
+	public List<Field> getFields(int project_id) {
+		List<Field> fields = null;
+		
 		PreparedStatement prepstatement = null;
 		ResultSet results = null;
 		
+		String getsql;
+		
 		try {
-			//Get the list of all fields in the database
-			String getsql = "SELECT * FROM fields";
-			prepstatement = Database.getConnection().prepareStatement(getsql);
+			//Get the fields matching the project id. If none is specified, get all fields
+			if (project_id == -1) {
+				getsql = "SELECT * FROM fields";
+				prepstatement = Database.getConnection().prepareStatement(getsql);
+			}
+			else {
+				getsql = "SELECT * FROM fields WHERE project_id = ?";
+				prepstatement = Database.getConnection().prepareStatement(getsql);
+				prepstatement.setInt(1, project_id);
+			}
 			results = prepstatement.executeQuery();
+			
+			if (results.isBeforeFirst())
+				fields = new ArrayList<Field>();
 			
 			//Add each field to the list
 			while (results.next()) {
@@ -42,28 +55,49 @@ public class Fields {
 				String helphtml = results.getString(5);
 				String knowndata = results.getString(6);
 				int field_num = results.getInt(7);
-				int project_id = results.getInt(8);
-				
+				project_id = results.getInt(8);
 				fields.add(new Field(id, title, xcoord, width, helphtml, knowndata, field_num, project_id));
 			}
-
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		finally {
-			try {
-				if (prepstatement != null)
-					prepstatement.close();
-				if (results != null)
-					results.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		return fields;
+	}
+	
+	/**
+	 * This method gets the field matching the field_id
+	 * @param field_id the id of the field to get
+	 * @return the matching field, or null if one doesn't exist
+	 */
+	public Field getField(int field_id) {
+		Field field = null;
+		PreparedStatement prepstatement = null;
+		ResultSet results = null;
+
+		try {
+			//Get the field
+			String getsql = "SELECT * FROM fields WHERE field_id = ?";
+			prepstatement = Database.getConnection().prepareStatement(getsql);
+			prepstatement.setInt(1, field_id);
+			results = prepstatement.executeQuery();
+			//If there isn't a matching field, quit
+			if (!results.isBeforeFirst())
+				return null;
+
+			String title = results.getString(2);
+			int xcoord = results.getInt(3);
+			int width = results.getInt(4);
+			String helphtml = results.getString(5);
+			String knowndata = results.getString(6);
+			int field_num = results.getInt(7);
+			int project_id = results.getInt(8);
+			field = new Field(field_id, title, xcoord, width, helphtml, knowndata, field_num, project_id);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return field;
 	}
 	
 	/**
@@ -76,7 +110,7 @@ public class Fields {
 		PreparedStatement prepstatement = null;
 		Statement statement = null;
 		ResultSet results = null;
-		int fieldid = -1;
+		int field_id = -1;
 		
 		try {
 			//Set up the SQL statement
@@ -88,9 +122,9 @@ public class Fields {
 			prepstatement.setString(1, field.getTitle());
 			prepstatement.setInt(2, field.getXcoord());
 			prepstatement.setInt(3, field.getWidth());
-			prepstatement.setString(4, field.getHelphtml().getCanonicalPath());
+			prepstatement.setString(4, field.getHelphtml());
 			if (field.getKnowndata() != null)
-				prepstatement.setString(5, field.getKnowndata().getCanonicalPath());
+				prepstatement.setString(5, field.getKnowndata());
 			else
 				prepstatement.setString(5, null);
 			prepstatement.setInt(6, field.getField_num());
@@ -102,30 +136,17 @@ public class Fields {
 				statement = connection.createStatement();
 				results = statement.executeQuery("SELECT last_insert_rowid()");
 				results.next();
-				fieldid = results.getInt(1);
-				field.setId(fieldid);
+				field_id = results.getInt(1);
+				field.setId(field_id);
 			}
 			else {
 				System.out.println("ERROR: Insert failed.");
 			}
 		}
-		catch (SQLException | IOException e) {
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		finally {
-			try {
-				if (prepstatement != null)
-					prepstatement.close();
-				if (statement != null)
-					statement.close();
-				if (results != null)
-					results.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return fieldid;
+		return field_id;
 	}
 	
 	/**
@@ -145,13 +166,13 @@ public class Fields {
 	public boolean remove(Field field) {
 		return false;
 	}
-	
+
 	/**
-	 * This method returns information about all of the fields for a specified project or all projects
-	 * @param params an encapsulation of the user's credentials and a project id. If no project id is given, information about all of the fields in the database is returned.
-	 * @return a list of information about each field
+	 * This method returns an encapsulation of the list of fields for a specified project or all projects
+	 * @param params an encapsulation of the user and desired project
+	 * @return an encapsulation of the list of matching fields
 	 */
-	public GetFields_Result GetFields(GetFields_Params params) {
-		return null;
+	public GetFields_Result GetFields_Result(GetFields_Params params) {
+		return new GetFields_Result(getFields(params.getProject_id()));
 	}
 }

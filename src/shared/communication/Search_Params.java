@@ -18,9 +18,9 @@ public class Search_Params {
 	 */
 	private String password;
 	/**
-	 * the fields to search for
+	 * the ids of the fields to search for
 	 */
-	private List<String> search_fields;
+	private List<Integer> search_fields;
 	/**
 	 * the values to search for
 	 */
@@ -35,7 +35,7 @@ public class Search_Params {
 	 * @param search_values the values to search for
 	 */
 	public Search_Params(String username, String password,
-			List<String> search_fields, List<String> search_values) {
+			List<Integer> search_fields, List<String> search_values) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -64,7 +64,7 @@ public class Search_Params {
 	 * This method returns the fields to search for
 	 * @return the search_fields
 	 */
-	public List<String> getSearch_fields() {
+	public List<Integer> getSearch_fields() {
 		return search_fields;
 	}
 
@@ -97,7 +97,7 @@ public class Search_Params {
 	 * This method sets the fields to search for
 	 * @param search_fields the search_fields to set
 	 */
-	public void setSearch_fields(List<String> search_fields) {
+	public void setSearch_fields(List<Integer> search_fields) {
 		this.search_fields = search_fields;
 	}
 
@@ -107,5 +107,28 @@ public class Search_Params {
 	 */
 	public void setSearch_values(List<String> search_values) {
 		this.search_values = search_values;
+	}
+
+//Methods
+	/**
+	 * This method returns a String representation of the Search parameters
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.username + "\n" + this.password + "\n");
+		for (int i = 0; i < this.search_fields.size(); i++) {
+			sb.append(this.search_fields.get(i));
+			if (i < this.search_fields.size()-1)
+				sb.append(",");
+		}
+		sb.append("\n");
+		for (int i = 0; i < this.search_values.size(); i++) {
+			sb.append(this.search_values.get(i));
+			if (i < this.search_values.size()-1)
+				sb.append(",");
+		}
+		sb.append("\n");
+		return sb.toString();
 	}
 }

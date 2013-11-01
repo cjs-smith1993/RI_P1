@@ -1,7 +1,5 @@
 package shared.model;
 
-import java.io.File;
-import java.io.IOException;
 import org.w3c.dom.Element;
 
 /**
@@ -29,13 +27,13 @@ public class Field {
 	 */
 	private int width;
 	/**
-	 * an HTML file that contains end-user help for this field (cannot be null)
+	 * the path to an HTML file that contains end-user help for this field (cannot be null)
 	 */
-	private File helphtml;
+	private String helphtml;
 	/**
-	 * a text file that contains known values for this field (a path, relative to the directory containing the XML file, to a file in the knowndata sub-directory
+	 * the path to a text file that contains known values for this field (a path, relative to the directory containing the XML file, to a file in the knowndata sub-directory
 	 */
-	private File knowndata;
+	private String knowndata;
 	/**
 	 * the field number for this field (cannot be null)
 	 */
@@ -63,8 +61,8 @@ public class Field {
 		this.title = title;
 		this.xcoord = xcoord;
 		this.width = width;
-		this.helphtml = new File(helphtml);
-		this.knowndata = new File(knowndata);
+		this.helphtml = helphtml;
+		this.knowndata = knowndata;
 		this.field_num = field_num;
 		this.project_id = project_id;
 	}
@@ -81,10 +79,10 @@ public class Field {
 		this.xcoord = Integer.parseInt(element.getElementsByTagName("xcoord").item(0).getTextContent());
 		this.width = Integer.parseInt(element.getElementsByTagName("width").item(0).getTextContent());
 		String helphtml = element.getElementsByTagName("helphtml").item(0).getTextContent();
-		this.helphtml = new File(helphtml);
+		this.helphtml = helphtml;
 		Element knowndata = (Element)element.getElementsByTagName("knowndata").item(0);
 		if (knowndata != null)
-			this.knowndata = new File(knowndata.getTextContent());
+			this.knowndata = knowndata.getTextContent();
 		else
 			this.knowndata = null;
 		this.field_num = field_num;
@@ -121,17 +119,17 @@ public class Field {
 		return width;
 	}
 	/**
-	 * This method returns the HTML file that contains end-user help for this field
+	 * This method returns the path to the HTML file that contains end-user help for this field
 	 * @return the helphtml for this field
 	 */
-	public File getHelphtml() {
+	public String getHelphtml() {
 		return helphtml;
 	}
 	/**
-	 * This method returns the text file that contains known values for this field
+	 * This method returns the path to the text file that contains known values for this field
 	 * @return the knowndata for this field
 	 */
-	public File getKnowndata() {
+	public String getKnowndata() {
 		return knowndata;
 	}
 	/**
@@ -179,18 +177,18 @@ public class Field {
 		this.width = width;
 	}
 	/**
-	 * This method sets the 
+	 * This method sets the path to the helphtml for this field
 	 * @param helphtml the location of the helphtml to set for this field
 	 */
 	public void setHelphtml(String helphtml) {
-		this.helphtml = new File(helphtml);
+		this.helphtml = helphtml;
 	}
 	/**
 	 * This method sets the text file that contains known values for this field
 	 * @param knowndata the location of the knowndata to set for this field
 	 */
 	public void setKnowndata(String knowndata) {
-		this.knowndata = new File(knowndata);
+		this.knowndata = knowndata;
 	}
 	/**
 	 * This method sets the field number for this field
@@ -219,16 +217,11 @@ public class Field {
 		sb.append("title: " + title + "\n");
 		sb.append("xcoord: " + xcoord + "\n");
 		sb.append("width: " + width + "\n");
-		try {
-			sb.append("helphtml: " + helphtml.getCanonicalPath() + "\n");
-			if (knowndata != null)
-				sb.append("knowndata: " + knowndata.getCanonicalPath() + "\n");
-			else
-				sb.append("knowndata: " + "none given\n");
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		sb.append("helphtml: " + helphtml + "\n");
+		if (knowndata != null)
+			sb.append("knowndata: " + knowndata + "\n");
+		else
+			sb.append("knowndata: " + "none given\n");
 		sb.append("field_num: " + field_num + "\n");
 		sb.append("project_id: " + project_id + "\n");
 		

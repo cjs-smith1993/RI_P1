@@ -73,6 +73,14 @@ public class ValidateUser_Result {
 		return validation;
 	}
 	
+	/**
+	 * This method returns whether or not the user is valid
+	 * @return true if the user is valid, otherwise false
+	 */
+	public boolean isValid() {
+		return validation.equals("TRUE");
+	}
+	
 //Setters
 	/**
 	 * This method sets the first name for the user

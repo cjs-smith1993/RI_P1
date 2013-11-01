@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import shared.communication.*;
 import shared.model.*;
 
 /**
@@ -22,13 +23,14 @@ public class Projects {
 	 */
 	public List<Project> getProjects() {
 		List<Project> projects = new ArrayList<Project>();
+		Connection connection = Database.getConnection();
 		PreparedStatement prepstatement = null;
 		ResultSet results = null;
 		
 		try {
 			//Get the list of all projects in the database
 			String getsql = "SELECT * FROM projects";
-			prepstatement = Database.getConnection().prepareStatement(getsql);
+			prepstatement = connection.prepareStatement(getsql);
 			results = prepstatement.executeQuery();
 			
 			//Add each project to the list
@@ -46,19 +48,38 @@ public class Projects {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		finally {
-			try {
-				if (prepstatement != null)
-					prepstatement.close();
-				if (results != null)
-					results.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		return projects;
+	}
+	
+	/**
+	 * This method gets the project matching the project_id
+	 * @param project_id the id of the project to get
+	 * @return the matching project, or null if one doesn't exist
+	 */
+	public Project getProject(int project_id) {
+		Project project = null;
+		PreparedStatement prepstatement = null;
+		ResultSet results = null;
+
+		try {
+			String getsql = "SELECT * FROM projects WHERE id = ?";
+			prepstatement = Database.getConnection().prepareStatement(getsql);
+			prepstatement.setInt(1, project_id);
+			results = prepstatement.executeQuery();
+			//If there isn't a matching project, quit
+			if (!results.isBeforeFirst())
+				return null;
+
+			String title = results.getString(2);
+			int recordsperimage = results.getInt(3);
+			int firstycoord = results.getInt(4);
+			int recordheight = results.getInt(5);
+			project = new Project(project_id, title, recordsperimage, firstycoord, recordheight);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return project;
 	}
 	
 	/**
@@ -101,19 +122,6 @@ public class Projects {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		finally {
-			try {
-				if (prepstatement != null)
-					prepstatement.close();
-				if (statement != null)
-					statement.close();
-				if (results != null)
-					results.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
 		return projectid;
 	}
 	
@@ -133,5 +141,9 @@ public class Projects {
 	 */
 	public boolean remove(Project project) {
 		return false;
+	}
+
+	public GetProjects_Result GetProjects_Result(GetProjects_Params params) {
+		return new GetProjects_Result(getProjects());
 	}
 }

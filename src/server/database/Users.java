@@ -47,19 +47,41 @@ public class Users {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		finally {
-			try {
-				if (prepstatement != null)
-					prepstatement.close();
-				if (results != null)
-					results.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		return users;
+	}
+	
+	/**
+	 * This method gets the user matching the user_id
+	 * @param user_id the id of the user to get
+	 * @return the matching user, or null if one doesn't exist
+	 */
+	public User getUser(int user_id) {
+		User user = null;
+		PreparedStatement prepstatement = null;
+		ResultSet results = null;
+
+		try {
+			String getsql = "SELECT * FROM users WHERE id = ?";
+			prepstatement = Database.getConnection().prepareStatement(getsql);
+			prepstatement.setInt(1, user_id);
+			results = prepstatement.executeQuery();
+			//If there isn't a matching user, quit
+			if (!results.isBeforeFirst())
+				return null;
+
+			String username = results.getString(2);
+			String password = results.getString(3);
+			String lastname = results.getString(4);
+			String firstname = results.getString(5);
+			String email = results.getString(6);
+			int indexedrecords = results.getInt(7);
+			int batch_id = results.getInt(8);
+			user = new User(user_id, username, password, lastname, firstname, email, indexedrecords, batch_id);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return user;
 	}
 	
 	/**
@@ -72,7 +94,7 @@ public class Users {
 		PreparedStatement prepstatement = null;
 		Statement statement = null;
 		ResultSet results = null;
-		int userid = -1;
+		int user_id = -1;
 		
 		try {
 			//Set up the SQL statement
@@ -95,8 +117,8 @@ public class Users {
 				statement = connection.createStatement();
 				results = statement.executeQuery("SELECT last_insert_rowid()");
 				results.next();
-				userid = results.getInt(1);
-				user.setId(userid);
+				user_id = results.getInt(1);
+				user.setId(user_id);
 			}
 			else {
 				System.out.println("ERROR: Insert failed.");
@@ -105,20 +127,7 @@ public class Users {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		finally {
-			try {
-				if (prepstatement != null)
-					prepstatement.close();
-				if (statement != null)
-					statement.close();
-				if (results != null)
-					results.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return userid;
+		return user_id;
 	}
 	
 	/**
@@ -147,13 +156,13 @@ public class Users {
 	public ValidateUser_Result ValidateUser(ValidateUser_Params params) {		
 		//Loop through the list of users in the database
 		List<User> users = getUsers();
-		
 		for (User user : users) {
 			//If a match is found, return the user's information
 			if (params.getUsername().equals(user.getUsername()) && params.getPassword().equals(user.getPassword())) {
 				return new ValidateUser_Result(user.getFirstname(), user.getLastname(), user.getIndexedRecords(), "TRUE");
 			}
 		}
+		//If no match is found, return false
 		return new ValidateUser_Result("", "", 0, "FALSE");
 	}
 }

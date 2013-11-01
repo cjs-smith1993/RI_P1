@@ -1,6 +1,5 @@
 package shared.communication;
 
-import java.io.IOException;
 import java.util.List;
 import shared.model.Field;
 
@@ -216,15 +215,12 @@ public class DownloadBatch_Result {
 				this.record_height + "\n" + this.num_records  +"\n" +
 				this.num_fields + "\n");
 			
-			for (Field field : fields) {
-				sb.append(field.getId() + "\n" + field.getField_num() + "\n" +
-						field.getTitle() + "\n" + field.getHelphtml().toString() + "\n" +
-						field.getXcoord() + "\n" + field.getWidth());
-				if (field.getKnowndata() != null) {
-					try {
-						sb.append(field.getKnowndata().getCanonicalPath());
-					}
-					catch (IOException e) {e.printStackTrace();}
+			for (int i = 0; i < this.fields.size(); i++) {
+				sb.append(this.fields.get(i).getId() + "\n" + this.fields.get(i).getField_num() + "\n" +
+						this.fields.get(i).getTitle() + "\n" + this.fields.get(i).getHelphtml().toString() + "\n" +
+						this.fields.get(i).getXcoord() + "\n" + this.fields.get(i).getWidth() + "\n");
+				if (this.fields.get(i).getKnowndata() != null) {
+					sb.append(this.fields.get(i).getKnowndata());
 				}
 			}
 			return sb.toString();

@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Scanner;
 import shared.communication.*;
 
@@ -81,7 +84,7 @@ public class Database {
 	 * This methods returns the users table
 	 * @return the users table
 	 */
-	public Users getAllUsers() {
+	public Users users() {
 		return users;
 	}
 
@@ -89,7 +92,7 @@ public class Database {
 	 * This methods returns the projects table
 	 * @return the projects table
 	 */
-	public Projects getAllProjects() {
+	public Projects projects() {
 		return projects;
 	}
 
@@ -97,7 +100,7 @@ public class Database {
 	 * This methods returns the fields table
 	 * @return the fields table
 	 */
-	public Fields getAllFields() {
+	public Fields fields() {
 		return fields;
 	}
 
@@ -105,7 +108,7 @@ public class Database {
 	 * This methods returns the batches table
 	 * @return the batches table
 	 */
-	public Batches getAllBatches() {
+	public Batches batches() {
 		return batches;
 	}
 
@@ -113,7 +116,7 @@ public class Database {
 	 * This methods returns the records table
 	 * @return the records table
 	 */
-	public Values getRecords() {
+	public Values values() {
 		return values;
 	}
 	
@@ -152,24 +155,14 @@ public class Database {
 		}
 
 		//Execute each statement
-		for (int i = 0; i < statements.length; i++) {
+		for (int i = 0; i < statements.length-1; i++) {
 			try {
 				statement = connection.createStatement();
 				//Remember to add the semicolon back to each statement
-				//System.out.println(statements[i] + ";");
 				statement.executeUpdate(statements[i] + ";");
 			}
 			catch (SQLException e) {
 				e.printStackTrace();
-			}
-			finally {
-				try {
-					if (statement != null)
-						statement.close();
-				}
-				catch (SQLException e) {
-					e.printStackTrace();
-				}
 			}
 		}
 	}
@@ -230,7 +223,7 @@ public class Database {
 	 * @return a list of information for each project
 	 */
 	public GetProjects_Result GetProjects(GetProjects_Params params) {
-		return new GetProjects_Result(projects.getProjects());
+		return projects.GetProjects_Result(params);
 	}
 	
 	/**
@@ -239,7 +232,7 @@ public class Database {
 	 * @return a url to a sample image
 	 */
 	public GetSampleImage_Result GetSampleImage(GetSampleImage_Params params) {
-		return null;
+		return batches.GetSampleImage(params);
 	}
 	
 	/**
@@ -248,7 +241,7 @@ public class Database {
 	 * @return a complete batch from the specified project
 	 */
 	public DownloadBatch_Result DownloadBatch(DownloadBatch_Params params) {
-		return null;
+		return batches.DownloadBatch(params);
 	}
 	
 	/**
@@ -257,7 +250,7 @@ public class Database {
 	 * @return success or failure based on the server's response
 	 */
 	public SubmitBatch_Result SubmitBatch(SubmitBatch_Params params) {
-		return null;
+		return batches.SubmitBatch(params);
 	}
 	
 	/**
@@ -266,7 +259,7 @@ public class Database {
 	 * @return a list of information about each field
 	 */
 	public GetFields_Result GetFields(GetFields_Params params) {
-		return null;
+		return fields.GetFields_Result(params);
 	}
 	
 	/**
@@ -275,6 +268,50 @@ public class Database {
 	 * @return a list of results matching the search criteria
 	 */
 	public Search_Result Search(Search_Params params) {
-		return null;
+		Search_Result result = new Search_Result(null);
+		ArrayList<Integer> search_fields = (ArrayList<Integer>)params.getSearch_fields();
+		ArrayList<String> search_values = (ArrayList<String>)params.getSearch_values();
+		
+		ArrayList<Result> search_results = new ArrayList<Result>();
+		
+		Connection connection = Database.getConnection();
+		PreparedStatement prepstatement = null;
+		ResultSet results = null;
+		
+		try {
+			//Try every combination of field id and search value
+			for (Integer field_id : search_fields) {
+				for (String value : search_values) {
+					//Get all record values, record number, field id, batch it, and image URL from the database
+					String sql = "SELECT record_value, record_num, fields.id AS field_id, batch_id, file_name "
+							+ "FROM record_values, batches, fields "
+							+ "WHERE record_values.batch_id = batches.id AND record_values.field_num = fields.field_num "
+							+ "AND batches.project_id = fields.project_id ";
+					//Now select out only matching records
+					sql += "AND record_value = ? AND field_id = ?";
+					prepstatement = connection.prepareStatement(sql);
+					prepstatement.setString(1, value.toUpperCase());
+					prepstatement.setInt(2, field_id);
+					results = prepstatement.executeQuery();
+					
+					//If there isn't a match, move on. Otherwise, get the match
+					if (!results.isBeforeFirst())
+						continue;
+					while (results.next()) {
+						int batch_id = results.getInt(4);
+						String image_url = results.getString(5);
+						int record_num = results.getInt(2);
+						search_results.add(new Result(batch_id, image_url, record_num, field_id));
+					}
+				}
+			}
+			if (search_results.size() == 0)
+				return result;
+			result.setSearch_results(search_results);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }

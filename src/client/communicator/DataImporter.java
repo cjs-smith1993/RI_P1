@@ -85,7 +85,7 @@ public class DataImporter {
 			
 			//Add the user to the database
 			Database.getInstance().startTransaction();
-			Database.getInstance().getAllUsers().add(user);
+			Database.getInstance().users().add(user);
 			Database.getInstance().endTransaction(true);
 		}
 	}
@@ -103,16 +103,16 @@ public class DataImporter {
 			
 			//Add the project to the database
 			Database.getInstance().startTransaction();
-			Database.getInstance().getAllProjects().add(project); //Add the project to the database
+			Database.getInstance().projects().add(project); //Add the project to the database
 			Database.getInstance().endTransaction(true);
 			
 			//Parse the list of fields for the project
 			Element fields = (Element)curProject.getElementsByTagName("fields").item(0);
-			parseFields(fields.getElementsByTagName("field"), i);
+			parseFields(fields.getElementsByTagName("field"), i+1);
 			
 			//Parse the list of batches for the project
 			Element batches = (Element)curProject.getElementsByTagName("images").item(0);
-			parseBatches(batches.getElementsByTagName("image"), i);
+			parseBatches(batches.getElementsByTagName("image"), i+1);
 		}
 	}
 	
@@ -124,12 +124,12 @@ public class DataImporter {
 	public void parseFields(NodeList fields, int project_id) {
 		for (int i = 0; i < fields.getLength(); i++) {
 			//Create a field from the current element
-			Field field = new Field((Element)fields.item(i), i, project_id);
+			Field field = new Field((Element)fields.item(i), i+1, project_id);
 			//System.out.println(field);
 			
 			//Add the field to the database
 			Database.getInstance().startTransaction();
-			Database.getInstance().getAllFields().add(field);
+			Database.getInstance().fields().add(field);
 			Database.getInstance().endTransaction(true);
 		}
 	}
@@ -147,13 +147,18 @@ public class DataImporter {
 			
 			//Add the batch to the database
 			Database.getInstance().startTransaction();
-			Database.getInstance().getAllBatches().add(batch);
+			int batch_id = Database.getInstance().batches().add(batch);
 			Database.getInstance().endTransaction(true);
 			
-			//Parse the list of records in the batch
+			
+			//If there are records to import, mark the batch as completed and then parse the list of records
 			Element records = (Element)curBatch.getElementsByTagName("records").item(0);
-			if (records != null)
-				parseRecords(records.getElementsByTagName("record"), i);
+			if (records != null) {
+				Database.getInstance().startTransaction();
+				Database.getInstance().batches().setCompleted(batch_id);
+				Database.getInstance().endTransaction(true);
+				parseRecords(records.getElementsByTagName("record"), batch_id);
+			}
 		}
 	}
 	
@@ -171,12 +176,12 @@ public class DataImporter {
 			for (int j = 0; j < values.getLength(); j++) {
 				//Create a value for each value
 				Element curValue = (Element)values.item(j);
-				Value value = new Value(curValue, i, j, batch_id);
+				Value value = new Value(curValue, i+1, j+1, batch_id);
 				//System.out.println(value.toString());
 				
 				//Add the value to the database
 				Database.getInstance().startTransaction();
-				Database.getInstance().getRecords().add(value);
+				Database.getInstance().values().add(value);
 				Database.getInstance().endTransaction(true);
 			}
 		}
