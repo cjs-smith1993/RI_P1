@@ -39,7 +39,7 @@ public class Values {
 				int field_num = results.getInt(4);
 				int batch_id = results.getInt(5);
 				
-				values.add(new Value(id, record_value, record_num, field_num, batch_id));
+				values.add(new Value(id, record_value, record_num, batch_id, field_num));
 			}
 
 		}
@@ -60,7 +60,7 @@ public class Values {
 		ResultSet results = null;
 
 		try {
-			String getsql = "SELECT * FROM values WHERE id = ?";
+			String getsql = "SELECT * FROM record_values WHERE id = ?";
 			prepstatement = Database.getConnection().prepareStatement(getsql);
 			prepstatement.setInt(1, value_id);
 			results = prepstatement.executeQuery();
@@ -72,7 +72,7 @@ public class Values {
 			int record_num = results.getInt(3);
 			int field_num = results.getInt(4);
 			int batch_id = results.getInt(5);
-			value = new Value(value_id, record_value, record_num, field_num, batch_id);
+			value = new Value(value_id, record_value, record_num, batch_id, field_num);
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

@@ -77,7 +77,7 @@ public class Fields {
 
 		try {
 			//Get the field
-			String getsql = "SELECT * FROM fields WHERE field_id = ?";
+			String getsql = "SELECT * FROM fields WHERE id = ?";
 			prepstatement = Database.getConnection().prepareStatement(getsql);
 			prepstatement.setInt(1, field_id);
 			results = prepstatement.executeQuery();

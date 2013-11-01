@@ -8,9 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import server.database.Database;
 import shared.communication.*;
-import shared.model.Batch;
 import client.ClientException;
 
 /**
@@ -272,35 +270,5 @@ public class ClientCommunicator {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-//		ClientCommunicator cc = ClientCommunicator.getInstance("localhost", 8080);
-//		try {
-//			//GetSampleImage_Params params = new GetSampleImage_Params("sheila", "parker", 1);
-//			//GetSampleImage_Result result = (GetSampleImage_Result)cc.doPost("/GetSampleImage", params);
-//			//System.out.println(result.toString());
-//			cc.doGet(new URL("http://localhost:8080/Users/CJS/Documents/School/Fall2013/CS_240/workspace/RecordIndexer/images/1890_image0.png"));
-//			//cc.doGet(new URL("http://students.cs.byu.edu/~cjs1993/pics/lds.png"));
-//		}
-//		catch (ClientException | IOException e) {
-//			e.printStackTrace();
-//		}
-		ClientCommunicator cc = ClientCommunicator.getInstance("localhost", 8080);
-		DownloadBatch_Params params = new DownloadBatch_Params("sheila", "parker", 1);
-		try {
-			DataImporter.getInstance().importFile("demo/indexer_data/Records/Records.xml");
-			cc.DownloadBatch(params);
-			Database.getInstance().startTransaction();
-			Batch b = Database.getInstance().batches().getBatch(1);
-			Database.getInstance().endTransaction(true);
-			assert b.getUser_id() == 3;
-			assert b.getState() == 0;
-			//params = new DownloadBatch_Params("sheila", "parker2", 1);
-			//assert cc.DownloadBatch(params).toString().equals("FAILED\n");
-			//params = new DownloadBatch_Params("sheila", "parker", 2);
-			//assert cc.DownloadBatch(params).toString().equals("FAILED\n");
-		}
-		catch (ClientException e) {
-			e.printStackTrace();
-			assert false;
-		}
 	}
 }

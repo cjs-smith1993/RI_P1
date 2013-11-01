@@ -3,6 +3,7 @@ package server;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -137,6 +138,8 @@ public class Server {
 				if (((ValidateUser_Result) results).isValid()) {
 					//Now get the sample image
 					results = Database.getInstance().GetSampleImage(params);
+					String url = ((GetSampleImage_Result)results).getImage_url();
+					((GetSampleImage_Result)results).setImage_url(InetAddress.getLocalHost().getHostName()+url);
 				}
 				else
 					results = new GetSampleImage_Result(null);

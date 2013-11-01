@@ -3,6 +3,7 @@ package client.communicator;
 import java.io.File;
 import java.io.IOException;
 import javax.xml.parsers.*;
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import server.database.Database;
@@ -187,6 +188,24 @@ public class DataImporter {
 		}
 	}
 	
+	/**
+	 * This method gets the directory that contains the imported XML file as well as the local files. It then attempts
+	 * to copy that directory to a local directory. If the two directories are the same, nothing is done
+	 * @param pathToXML The path to the XML file to import
+	 */
+	public void copyDirectory(String pathToXML) {
+		File xmlFile = new File(pathToXML);
+		File directory = xmlFile.getParentFile();
+		
+		try {
+			if (!directory.equals(new File("local_files")))
+				FileUtils.copyDirectory(directory, new File("local_files"));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 //Main
 	/**
 	 * This main routine creates an instance of a data importer and imports data from an XML file
@@ -195,5 +214,6 @@ public class DataImporter {
 	public static void main(String args[]) {
 		DataImporter di = getInstance();
 		di.importFile(args[0]);
+		di.copyDirectory(args[0]);
 	}
 }

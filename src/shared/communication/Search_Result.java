@@ -17,7 +17,7 @@ public class Search_Result {
 	//Constructors
 	/**
 	 * This constructor is an encapsulation of the Search results into a DownloadBatch_Results object
-	 * @param search_results The list of results
+	 * @param results The list of results
 	 */
 	public Search_Result(List<Result> results) {
 		super();
@@ -36,7 +36,7 @@ public class Search_Result {
 	//Setters
 	/**
 	 * This method sets the list of results matching the search
-	 * @param search_results the search_results to set
+	 * @param results the search_results to set
 	 */
 	public void setSearch_results(List<Result> results) {
 		this.results1 = results;

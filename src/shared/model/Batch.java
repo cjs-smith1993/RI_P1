@@ -35,7 +35,7 @@ public class Batch {
 	/**
 	 * This constructor takes all required information and creates a new field for the database.
 	 * @param id the unique id number for this batch
-	 * @param file the location of a PNG file that contains the image for this batch
+	 * @param file_name the location of a PNG file that contains the image for this batch
 	 * @param project_id the id number of the project this batch corresponds to
 	 * @param user_id the id number of the user currently working on this batch
 	 * @param state the current state of this batch
