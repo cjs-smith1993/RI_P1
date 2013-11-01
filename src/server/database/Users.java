@@ -47,6 +47,17 @@ public class Users {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return users;
 	}
 	
@@ -80,6 +91,17 @@ public class Users {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return user;
 	}
@@ -126,6 +148,19 @@ public class Users {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (statement != null)
+					statement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return user_id;
 	}

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 import shared.communication.*;
 
 public class Database {
@@ -61,6 +62,11 @@ public class Database {
 	 * This constructor initializes the database
 	 */
 	private Database() {
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 		users = new Users();
 		projects = new Projects();
 		fields = new Fields();
@@ -160,6 +166,7 @@ public class Database {
 				statement = connection.createStatement();
 				//Remember to add the semicolon back to each statement
 				statement.executeUpdate(statements[i] + ";");
+				statement.close();
 			}
 			catch (SQLException e) {
 				e.printStackTrace();
@@ -172,11 +179,10 @@ public class Database {
 	 */
 	public void startTransaction() {
 		try {
-			Class.forName("org.sqlite.JDBC");
 			connection = DriverManager.getConnection(CONNECTION_URL);
 			connection.setAutoCommit(false);
 		}
-		catch (SQLException | ClassNotFoundException e) {
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -311,6 +317,17 @@ public class Database {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return result;
 	}

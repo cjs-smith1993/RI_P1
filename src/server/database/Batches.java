@@ -46,6 +46,17 @@ public class Batches {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return batches;
 	}
 	
@@ -80,6 +91,17 @@ public class Batches {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return batch;
 	}
@@ -124,6 +146,19 @@ public class Batches {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (statement != null)
+					statement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return batch_id;
 	}
 	
@@ -162,6 +197,15 @@ public class Batches {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -188,6 +232,17 @@ public class Batches {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return new GetSampleImage_Result(null);
 	}
@@ -263,6 +318,15 @@ public class Batches {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return result;
 	}
 	
@@ -330,17 +394,29 @@ public class Batches {
 			prepstatement.setInt(3, user_id);
 			prepstatement.executeUpdate();
 			
-			//Mark the user as no longer using the batch
-			updatesql = "UPDATE users SET batch_id = ? WHERE id = ?";
+			//Mark the user as no longer using the batch and increment the number of indexed records
+			User u = Database.getInstance().users().getUser(user_id);
+			int cur_indexed_records = u.getIndexedRecords();
+			updatesql = "UPDATE users SET batch_id = ?, indexed_records = ? WHERE id = ?";
 			prepstatement = connection.prepareStatement(updatesql);
 			prepstatement.setInt(1, -1);
-			prepstatement.setInt(2, user_id);
+			prepstatement.setInt(2, cur_indexed_records+recordsperimage);
+			prepstatement.setInt(3, user_id);
 			prepstatement.executeUpdate();
 			
 			result.setSuccess(true);
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return result;
 	}

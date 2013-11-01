@@ -48,6 +48,17 @@ public class Projects {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return projects;
 	}
 	
@@ -78,6 +89,17 @@ public class Projects {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return project;
 	}
@@ -121,6 +143,19 @@ public class Projects {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (statement != null)
+					statement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return projectid;
 	}

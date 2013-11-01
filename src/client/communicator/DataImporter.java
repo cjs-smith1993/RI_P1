@@ -3,6 +3,7 @@ package client.communicator;
 import java.io.File;
 import java.io.IOException;
 import javax.xml.parsers.*;
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import server.database.Database;
@@ -51,8 +52,10 @@ public class DataImporter {
 		database.endTransaction(true);
 		
 		//Copy files to local directory
+		copyDirectory(filename);
+		
+		//Parse the XML
 		File xmlFile = new File(filename);
-
 		try {
 			//Set up the document
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -60,6 +63,7 @@ public class DataImporter {
 			Document doc = dBuilder.parse(xmlFile);
 			doc.getDocumentElement().normalize();
 
+			database.startTransaction();
 			 //Parse the list of users
 			NodeList users = doc.getElementsByTagName("user");
 			parseUsers(users);
@@ -67,6 +71,8 @@ public class DataImporter {
 			//Parse the list of projects
 			NodeList projects = doc.getElementsByTagName("project");
 			parseProjects(projects);
+			
+			database.endTransaction(true);
 		}
 		catch (ParserConfigurationException | IOException | SAXException e) {
 			e.printStackTrace();
@@ -84,9 +90,7 @@ public class DataImporter {
 			//System.out.println(user.toString());
 			
 			//Add the user to the database
-			Database.getInstance().startTransaction();
 			Database.getInstance().users().add(user);
-			Database.getInstance().endTransaction(true);
 		}
 	}
 
@@ -102,9 +106,7 @@ public class DataImporter {
 			//System.out.println(project.toString());
 			
 			//Add the project to the database
-			Database.getInstance().startTransaction();
 			Database.getInstance().projects().add(project); //Add the project to the database
-			Database.getInstance().endTransaction(true);
 			
 			//Parse the list of fields for the project
 			Element fields = (Element)curProject.getElementsByTagName("fields").item(0);
@@ -128,9 +130,7 @@ public class DataImporter {
 			//System.out.println(field);
 			
 			//Add the field to the database
-			Database.getInstance().startTransaction();
 			Database.getInstance().fields().add(field);
-			Database.getInstance().endTransaction(true);
 		}
 	}
 	
@@ -146,17 +146,13 @@ public class DataImporter {
 			//System.out.println(batch.toString());
 			
 			//Add the batch to the database
-			Database.getInstance().startTransaction();
 			int batch_id = Database.getInstance().batches().add(batch);
-			Database.getInstance().endTransaction(true);
 			
 			
 			//If there are records to import, mark the batch as completed and then parse the list of records
 			Element records = (Element)curBatch.getElementsByTagName("records").item(0);
 			if (records != null) {
-				Database.getInstance().startTransaction();
 				Database.getInstance().batches().setCompleted(batch_id);
-				Database.getInstance().endTransaction(true);
 				parseRecords(records.getElementsByTagName("record"), batch_id);
 			}
 		}
@@ -180,10 +176,26 @@ public class DataImporter {
 				//System.out.println(value.toString());
 				
 				//Add the value to the database
-				Database.getInstance().startTransaction();
 				Database.getInstance().values().add(value);
-				Database.getInstance().endTransaction(true);
 			}
+		}
+	}
+	
+	/**
+	 * This method gets the directory that contains the imported XML file as well as the local files. It then attempts
+	 * to copy that directory to a local directory. If the two directories are the same, nothing is done
+	 * @param pathToXML The path to the XML file to import
+	 */
+	public void copyDirectory(String pathToXML) {
+		File xmlFile = new File(pathToXML);
+		File directory = xmlFile.getParentFile();
+		
+		try {
+			if (!directory.equals(new File("local_files")))
+				FileUtils.copyDirectory(directory, new File("local_files"));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -193,7 +205,6 @@ public class DataImporter {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		DataImporter di = getInstance();
-		di.importFile(args[0]);
+		DataImporter.getInstance().importFile(args[0]);
 	}
 }

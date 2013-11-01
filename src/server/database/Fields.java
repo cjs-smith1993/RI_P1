@@ -62,6 +62,17 @@ public class Fields {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return fields;
 	}
 	
@@ -77,7 +88,7 @@ public class Fields {
 
 		try {
 			//Get the field
-			String getsql = "SELECT * FROM fields WHERE field_id = ?";
+			String getsql = "SELECT * FROM fields WHERE id = ?";
 			prepstatement = Database.getConnection().prepareStatement(getsql);
 			prepstatement.setInt(1, field_id);
 			results = prepstatement.executeQuery();
@@ -96,6 +107,17 @@ public class Fields {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return field;
 	}
@@ -145,6 +167,19 @@ public class Fields {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (prepstatement != null)
+					prepstatement.close();
+				if (statement != null)
+					statement.close();
+				if (results != null)
+					results.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return field_id;
 	}

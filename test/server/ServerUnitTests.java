@@ -1,7 +1,6 @@
 package test.server;
 
 import org.junit.* ;
-import static org.junit.Assert.* ;
 
 public class ServerUnitTests {
 	
@@ -12,18 +11,12 @@ public class ServerUnitTests {
 	@After
 	public void teardown() {
 	}
-	
-	@Test
-	public void test_1() {
-		assertEquals("OK", "OK");
-		assertTrue(true);
-		assertFalse(false);
-	}
 
 	public static void main(String[] args) {
 		
 		String[] testClasses = new String[] {
-				"server.ServerUnitTests"
+				"test.server.BatchesTest", "test.server.DatabaseTest", "test.server.FieldsTest",
+				"test.server.ProjectsTest", "test.server.UsersTest", "test.server.ValuesTest"
 		};
 
 		org.junit.runner.JUnitCore.main(testClasses);

@@ -94,7 +94,7 @@ public class Server {
 	/**
 	 * This method runs the server
 	 */
-	private static void run(int portNum) {
+	public static void run(int portNum) {
 		server = Server.getInstance(portNum);
 		Server.initialize();
 		server.start();

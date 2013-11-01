@@ -1,7 +1,6 @@
 package shared.communication;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class is an encapsulation of the parameters of the SubmitBatch command, which allows for easier XML serialization/deserialization.
