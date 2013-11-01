@@ -1,0 +1,71 @@
+Starting audit...
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/client/ClientException.java:5: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/client/communicator/ClientCommunicator.java:268:3: Got an exception - expecting EOF, found '}'
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/client/communicator/DataImporter.java:73:3: Got an exception - expecting EOF, found '}'
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/Server.java:13: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/Server.java:44: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/Server.java:103:5: Cyclomatic Complexity is 14 (max allowed is 10).
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/Server.java:120: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/Server.java:131: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/Server.java:142: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/Server.java:153: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/Server.java:164: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/Server.java:190: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/Server.java:193: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Batches.java:148: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Batches.java:187: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Batches.java:206: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Batches.java:238: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Database.java:178:3: Got an exception - expecting EOF, found '}'
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Fields.java:21: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Fields.java:22: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Fields.java:61: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Fields.java:86: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Projects.java:67: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Users.java:43: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Users.java:67: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Users.java:128: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Users.java:129: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/server/database/Values.java:78: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/DownloadBatch_Params.java:4: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/DownloadBatch_Params.java:25: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/DownloadBatch_Result.java:7: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/DownloadBatch_Result.java:48: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetFields_Params.java:4: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetFields_Params.java:25: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetFields_Result.java:7: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetFields_Result.java:20: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetFields_Result.java:58: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetProjects_Params.java:4: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetProjects_Params.java:21: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetProjects_Result.java:7: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetProjects_Result.java:20: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetSampleImage_Params.java:4: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetSampleImage_Params.java:25: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetSampleImage_Result.java:4: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/GetSampleImage_Result.java:17: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/Search_Params.java:6: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/Search_Result.java:6: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/Search_Result.java:35: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/SubmitBatch_Params.java:6: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/SubmitBatch_Params.java:31: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/SubmitBatch_Result.java:4: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/SubmitBatch_Result.java:17: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/ValidateUser_Params.java:4: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/ValidateUser_Params.java:21: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/ValidateUser_Result.java:4: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/ValidateUser_Result.java:29: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/communication/ValidateUser_Result.java:120: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Field.java:34: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Field.java:79: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Field.java:80: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Project.java:26: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Project.java:30: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Project.java:40: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Project.java:59: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Project.java:60: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Project.java:61: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Project.java:91: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/Project.java:131: Line is longer than 100 characters.
+/Users/CJS/Documents/School/Fall2013/CS 240/workspace/RecordIndexer/src/shared/model/User.java:80: Line is longer than 100 characters.
+Audit done.
